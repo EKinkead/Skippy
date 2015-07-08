@@ -16,6 +16,7 @@ local scene = composer.newScene( sceneName )
     gameTimers.frame = 0
     gameTimers.totalTime = 0
     gameTimers.spawnTime = 0
+    gameTimers.gameStarted = false
     playerFrog = {}
     startPad = {}
     pad = {}
@@ -46,6 +47,25 @@ end
 local onUpdate = function( event )
 
 -- print ("something")
+
+if gameTimers.gameStarted then
+
+    if startPad then 
+
+    startPad.x = startPad.x -1 
+
+  --  if startPad.x > -20 then
+   --     startPad:removeSelf( )
+  --      startPad= nil
+  --  end
+    -- print ("There is a start pad!!!!")
+    end
+
+    if playerFrog.isOnSomething then
+
+    playerFrog.x = playerFrog.x - 1
+
+    end
 
     gameTimers.frame = gameTimers.frame + 1
     gameTimers.spawnTime = gameTimers.spawnTime +1
@@ -87,6 +107,7 @@ local onUpdate = function( event )
 
     end
 
+end
 
 end
 
@@ -111,8 +132,31 @@ function scene:show( event )
         Runtime:addEventListener( "enterFrame", onUpdate )
 
         playerFrog = self:getObjectByName( "PlayerFrog" )
-        startPad = self:getObjectByName( "PlayerFrog" )
+        startPad = self:getObjectByName( "StartPad" )
         padsmall = self:getObjectByName("Padsmall")
+        startPad.myName = "startpad"
+        padsmall.myName = "padsmall"
+
+        local function onLocalCollision( self, event )
+
+            if ( event.phase == "began" ) then
+                print ("Hit started")
+                gameTimers.gameStarted = true
+                playerFrog.isOnSomething = true
+                                                   -- print( self.myName .. ": collision began with " .. event.other.myName )
+            end
+
+
+            return
+           
+        end
+
+        playerFrog.collision = onLocalCollision
+        playerFrog:addEventListener( "collision", playerFrog )
+
+        padsmall.collision = onLocalCollision
+        padsmall:addEventListener( "collision", padsmall )
+
       --  padsmall.x = 320
       --  padsmall.y = 350
 
